@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pyrsistent import v
 
 app = FastAPI()
 
@@ -8,4 +9,4 @@ def read_root():
 
 @app.get("/catalogue")
 def open_catalogue():
-  return [{"item_name": "aaa"}]
+  return v({"item_name": "aaa"}).append({"item_name": "bbb"}).tolist()
