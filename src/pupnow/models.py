@@ -1,8 +1,9 @@
 import csv
-from pathlib import Path
-from sqlalchemy import JSON
-from sqlalchemy.orm import MappedColumn, mapped_column
-from .database import Base, engine, SessionLocal
+from typing import Optional
+from sqlalchemy import select, func
+from sqlalchemy.orm import MappedColumn, mapped_column, Session
+from .config import PROJ_ROOT
+from .database import Base, engine, SessionLocal, with_session
 
 class Breed(Base):
   __tablename__ = "breed"
@@ -14,10 +15,13 @@ class Breed(Base):
 
 Base.metadata.create_all(engine)
 
+@with_session
+def __get_count_in_db(session: Optional[Session] = None):
+  if session:
+    return session.execute(select(func.count()).select_from(Breed)).scalar()
+
 def __populate_db():
-  CURRENT_FILE = Path(__file__).resolve()
-  ROOT = CURRENT_FILE.parents[2]
-  DATA_SOURCE_PATH = ROOT / "pup-db.csv"
+  DATA_SOURCE_PATH = PROJ_ROOT / "pup-db.csv"
   with open(DATA_SOURCE_PATH, mode="r", newline="") as f:
     session = SessionLocal()
     reader = csv.DictReader(f)
@@ -32,4 +36,7 @@ def __populate_db():
         print(f"Error: {e}")
     session.close()
 
-__populate_db()
+if __get_count_in_db() == 0:
+  __populate_db()
+else:
+  print("DB is already populated. We're good to go.")
