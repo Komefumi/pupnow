@@ -1,9 +1,10 @@
-from fastapi.testclient import TestClient
-from pupnow.main import app
+from pupnow.models import get_count_in_db
 
 
 def test_read_main(get):
   assert get("/") == {"Hello": "World"}
 
 def test_get_catalogue(get):
-  isinstance(get("/catalogue"), list)
+  data = get("/catalogue")
+  isinstance(data, list)
+  assert len(data) == get_count_in_db()

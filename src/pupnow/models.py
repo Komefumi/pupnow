@@ -16,7 +16,7 @@ class Breed(Base):
 Base.metadata.create_all(engine)
 
 @with_session
-def __get_count_in_db(session: Optional[Session] = None):
+def get_count_in_db(session: Optional[Session] = None):
   if session:
     return session.execute(select(func.count()).select_from(Breed)).scalar()
 
@@ -36,7 +36,7 @@ def __populate_db():
         print(f"Error: {e}")
     session.close()
 
-if __get_count_in_db() == 0:
+if get_count_in_db() == 0:
   __populate_db()
 else:
   print("DB is already populated. We're good to go.")

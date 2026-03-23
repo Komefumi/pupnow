@@ -1,6 +1,10 @@
-from fastapi import FastAPI
-from pyrsistent import v
+from fastapi import FastAPI, Depends
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from .database import get_db
 from . import models
+
+Breed = models.Breed
 
 app = FastAPI()
 
@@ -9,5 +13,5 @@ def read_root():
   return {"Hello": "World"}
 
 @app.get("/catalogue")
-def open_catalogue():
-  return v({"item_name": "aaa"}).append({"item_name": "bbb"}).tolist()
+def open_catalogue(db: Session = Depends(get_db)):
+  return db.execute(select(Breed)).scalars().all()
