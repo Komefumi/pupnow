@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pyrsistent import v
+from . import models
 
 app = FastAPI()
 
